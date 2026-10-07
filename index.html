@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color"content="#f5f7fb">
+    <title>ФинПлан — личные финансы</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+    <!-- Шапка -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">₽</div>
+
+            <div>
+                <strong>ФинПлан</strong>
+                <span>Личные финансы</span>
+            </div>
+        </div>
+
+        <button class="icon-btn"onclick="openSettings()">
+            ⚙️
+        </button>
+    </header>
+    <main>
+        <!-- ================= -->
+        <!-- ГЛАВНАЯ -->
+        <!-- ================= -->
+        <section id="dashboard"class="view active">
+            <div class="page-title">
+                <h1>Добрый день!</h1>
+                <p id="currentDate"></p>
+            </div>
+            <!-- Баланс -->
+            <div class="hero">
+                <div class="hero-label">
+                    Свободные деньги в этом месяце
+                </div>
+                <div class="hero-balance"id="heroBalance">
+                    0 ₽
+                </div>
+
+                <div class="hero-bottom">
+                    <div class="hero-stat">
+                        
+                        <span>Доходы</span>
+                        <strong id="heroIncome">
+                            0 ₽
+                        </strong>
+                    </div>
+
+                    <div class="hero-stat">
+
+                        <span>Расходы</span>
+
+                        <strong id="heroExpense">
+                            0 ₽
+                        </strong>
+                    </div>
+                </div>
+            </div>
+            <!-- Финансовые показатели -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <small>Общий долг</small>
+                    <strong id="totalDebt">
+                        0 ₽
+                    </strong>
+                </div>
+                <div class="stat-card">
+                    <small>Платежи по долгам</small>
+
+                    <strong id="monthlyDebt">
+                        0 ₽
+                    </strong>
+                </div>
+                
+                <div class="stat-card">
+                    <small>Обязательные расходы</small>
+                    <strong id="mandatoryExpenses">
+                        0 ₽
+                    </strong>
+                </div>
+                
+                <div class="stat-card">
+                    <small>Долговая нагрузка</small>
+                    <strong id="debtLoad">
+                        0%
+                    </strong>
+                </div>
+            </div>
+            <!-- Платежи -->
+            <div class="section">
+                <div class="section-head">
+                    <h2>Ближайшие платежи</h2>
+                    <button class="link-btn"onclick="showView('payments')">
+                        Все
+                    </button>
+                </div>
+
+                <div class="card">
+
+                    <div id="dashboardPayments"class="payment-list"></div>
+                </div>
+            </div>
+            <!-- Последние операции -->
+            <div class="section">
+
+                <div class="section-head">
+                    <h2>Последние операции</h2>
+                    
+                    <button class="link-btn"onclick="showView('transactions')">Все</button>
+                </div>
+
+                <div class="card">
+
+                    <div id="dashboardTransactions"class="transaction-list"></div>
+
+                </div>
+
+            </div>
+            <!-- AI -->
+            <div class="section">
+
+                <div class="ai-card">
+
+                    <div class="ai-icon">
+                        🤖
+                    </div>
+
+                    <h2>
+                        ФинПлан AI
+                    </h2>
+
+                    <p>
+                        Задайте вопрос о своих финансах.
+                    </p>
+
+                    <button
+                        class="primary-btn"
+                        onclick="showView('ai')"
+                    >
+                        Открыть консультанта
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+        <!-- ================= -->
+        <!-- ОПЕРАЦИИ -->
+        <!-- ================= -->
+        <section
+            id="transactions"
+            class="view"
+        >
+
+            <div class="page-title">
+
+                <h1>Операции</h1>
+
+                <p>
+                    Все доходы и расходы
+                </p>
+
+            </div>
+
+            <div class="filters">
+
+                <button
+                    class="filter active"
+                    onclick="filterTransactions('all', this)"
+                >
+                    Все
+                </button>
+
+                <button
+                    class="filter"
+                    onclick="filterTransactions('income', this)"
+                >
+                    Доходы
+                </button>
+
+                <button
+                    class="filter"
+                    onclick="filterTransactions('expense', this)"
+                >
+                    Расходы
+                </button>
+
+            </div>
+
+            <div class="section">
+
+                <button
+                    class="primary-btn"
+                    onclick="openTransactionModal()"
+                >
+                    + Добавить операцию
+                </button>
+
+            </div>
+
+            <div class="section">
+
+                <div class="card">
+
+                    <div
+                        id="transactionsList"
+                        class="transaction-list"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        </section>
+        <!-- ================= -->
+        <!-- ДОЛГИ -->
+        <!-- ================= -->
+        <section
+            id="debts"
+            class="view"
+        >
+
+            <div class="page-title">
+
+                <h1>Долги</h1>
+
+                <p>
+                    Кредиты, ипотека и рассрочки
+                </p>
+
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="openDebtModal()"
+            >
+                + Добавить долг
+            </button>
+
+
+            <div class="section">
+
+                <div
+                    id="debtsList"
+                    class="debt-list"
+                ></div>
+
+            </div>
+
+        </section>
+        <!-- ================= -->
+        <!-- ЦЕЛИ -->
+        <!-- ================= -->
+        <section
+            id="goals"
+            class="view"
+        >
+
+            <div class="page-title">
+
+                <h1>Цели</h1>
+
+                <p>
+                    На что вы копите
+                </p>
+
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="openGoalModal()"
+            >
+                + Добавить цель
+            </button>
+
+            <div class="section">
+
+                <div
+                    id="goalsList"
+                    class="debt-list"
+                ></div>
+
+            </div>
+
+        </section>
+        <!-- ================= -->
+        <!-- AI -->
+        <!-- ================= -->
+        <section
+            id="ai"
+            class="view"
+        >
+
+            <div class="page-title">
+
+                <h1>ФинПлан AI</h1>
+
+                <p>
+                    Ваш финансовый помощник
+                </p>
+
+            </div>
+
+            <div class="chat">
+
+                <div
+                    id="chatMessages"
+                    class="chat-messages"
+                >
+
+                    <div class="message ai">
+
+                        Привет! Я помогу разобраться
+                        с вашими финансами.
+
+                    </div>
+
+                </div>
+
+                <div class="chat-input">
+
+                    <input
+                        id="aiInput"
+                        placeholder="Задайте вопрос..."
+                        onkeydown="
+                            if(event.key === 'Enter')
+                                sendAI()
+                        "
+                    >
+
+                    <button
+                        class="primary-btn"
+                        onclick="sendAI()"
+                    >
+                        Отправить
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+        <!-- ================= -->
+        <!-- ПЛАТЕЖИ -->
+        <!-- ================= -->
+        <section
+            id="payments"
+            class="view"
+        >
+            <div class="page-title">
+
+                <h1>Платежи</h1>
+
+                <p>
+                    Обязательные платежи
+                </p>
+
+            </div>
+            
+            <div class="card">
+
+                <div
+                    id="paymentsList"
+                    class="payment-list"
+                ></div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+<!-- ================= -->
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
+<!-- ================= -->
+<nav class="bottom-nav">
+
+    <button
+        class="nav-btn active"
+        data-view="dashboard"
+        onclick="showView('dashboard')"
+    >
+        <span class="nav-icon">🏠</span>
+        Главная
+    </button>
+
+    <button
+        class="nav-btn"
+        data-view="transactions"
+        onclick="showView('transactions')"
+    >
+        <span class="nav-icon">📊</span>
+        Операции
+    </button>
+
+    <button
+        class="nav-btn"
+        data-view="debts"
+        onclick="showView('debts')"
+    >
+        <span class="nav-icon">💳</span>
+        Долги
+    </button>
+
+    <button
+        class="nav-btn"
+        data-view="goals"
+        onclick="showView('goals')"
+    >
+        <span class="nav-icon">🎯</span>
+        Цели
+    </button>
+
+    <button
+        class="nav-btn"
+        data-view="ai"
+        onclick="showView('ai')"
+    >
+        <span class="nav-icon">🤖</span>
+        AI
+    </button>
+</nav>
+<!-- ================= -->
+<!-- МОДАЛЬНОЕ ОКНО -->
+<!-- ================= -->
+<div
+    id="modal"
+    class="modal"
+>
+    <div class="modal-box">
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+                Добавить
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal()"
+            >
+                ✕
+            </button>
+        </div>
+        <div id="modalContent"></div>
+    </div>
+</div>
+<script src="js/app.js"></script>
+
+</body>
+</html>
