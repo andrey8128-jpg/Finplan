@@ -1,0 +1,16 @@
+{
+  "name": "Финансовый Трекер",
+  "short_name": "Финансы",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0d0f12",
+  "theme_color": "#0d0f12",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2953/2953363.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
