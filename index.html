@@ -1,261 +1,108 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<meta name="theme-color" content="#f5f7fb">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>ФинПлан — личные финансы</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Финансовый Трекер | Monex Style</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Подключение иконкового шрифта FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<div class="app">
-<header class="header">
-<div class="logo">
-<div class="logo-icon">₽</div>
-<div>
-<div class="logo-title">ФинПлан</div>
-<div class="logo-subtitle">Личные финансы</div>
-</div>
-</div>
-<button class="settings-btn" onclick="openSettings()">⚙</button>
-</header>
 
-<main class="main">
+  <div class="app-container">
+    <!-- Шапка профиля -->
+    <header class="header">
+      <div class="user-info">
+        <div class="avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div>
+          <h2>Мой Баланс</h2>
+          <p class="subtitle">Управление финансами</p>
+        </div>
+      </div>
+      <div class="header-icon">
+        <i class="fa-regular fa-bell"></i>
+      </div>
+    </header>
 
-<section id="dashboard" class="view active">
-<div class="greeting">
-<div>
-<div class="greeting-title">Мои финансы</div>
-<div class="greeting-date" id="currentDate"></div>
-</div>
-</div>
+    <!-- Главная карточка с балансом -->
+    <div class="card balance-card">
+      <span class="card-label">Общий баланс</span>
+      <div class="balance-amount" id="totalBalance">0 ₽</div>
+      
+      <div class="balance-stats">
+        <div class="stat-item income">
+          <i class="fa-solid fa-arrow-down"></i>
+          <div>
+            <span>Доходы</span>
+            <strong id="totalIncome">0 ₽</strong>
+          </div>
+        </div>
+        <div class="stat-item expense">
+          <i class="fa-solid fa-arrow-up"></i>
+          <div>
+            <span>Расходы</span>
+            <strong id="totalExpense">0 ₽</strong>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="hero-card">
-<div class="hero-label">Доступный баланс</div>
-<div class="hero-balance" id="heroBalance">0 ₽</div>
-<div class="hero-bottom">
-<div class="hero-stat">
-<div class="hero-stat-label">Доходы</div>
-<div class="hero-stat-value income" id="heroIncome">0 ₽</div>
-</div>
-<div class="hero-stat">
-<div class="hero-stat-label">Расходы</div>
-<div class="hero-stat-value expense" id="heroExpense">0 ₽</div>
-</div>
-</div>
-</div>
+    <!-- Сводка обязательных платежей (Кредиты и Ипотека) -->
+    <div class="card credit-summary-card">
+      <div class="credit-header">
+        <i class="fa-solid fa-house-credit-card"></i>
+        <span>Кредиты и Ипотека (в месяц)</span>
+      </div>
+      <div class="credit-amount" id="totalCredits">0 ₽</div>
+    </div>
 
-<div class="stats-grid">
-<div class="stat-card">
-<div class="stat-icon debt-icon">₽</div>
-<div>
-<div class="value" id="totalDebt">0 ₽</div>
-<div class="label">Общий долг</div>
-</div>
-</div>
-<div class="stat-card">
-<div class="stat-icon payment-icon">↻</div>
-<div>
-<div class="value" id="monthlyDebt">0 ₽</div>
-<div class="label">Платежи по долгам</div>
-</div>
-</div>
-<div class="stat-card">
-<div class="stat-icon expense-icon">▣</div>
-<div>
-<div class="value" id="mandatoryExpenses">0 ₽</div>
-<div class="label">Обязательные расходы</div>
-</div>
-</div>
-<div class="stat-card">
-<div class="stat-icon load-icon">%</div>
-<div>
-<div class="value" id="debtLoad">0%</div>
-<div class="label">Долговая нагрузка</div>
-</div>
-</div>
-</div>
+    <!-- Форма добавления операции -->
+    <section class="section">
+      <h3><i class="fa-solid fa-plus-circle"></i> Добавить запись</h3>
+      <form id="financeForm" class="finance-form">
+        <div class="form-group">
+          <label for="type">Тип записи</label>
+          <select id="type" required>
+            <option value="expense">Расход</option>
+            <option value="income">Доход</option>
+            <option value="credit">Обязательный платеж (Кредит / Ипотека)</option>
+          </select>
+        </div>
 
-<div class="section">
-<div class="section-header">
-<div>
-<div class="section-title">Ближайшие платежи</div>
-<div class="section-subtitle">Что нужно оплатить</div>
-</div>
-<button class="text-btn" onclick="showView('payments')">Все</button>
-</div>
-<div id="dashboardPayments"></div>
-</div>
+        <div class="form-group">
+          <label for="title">Название</label>
+          <input type="text" id="title" placeholder="Например: Зарплата, Ипотека, Продукты" required>
+        </div>
 
-<div class="section">
-<div class="section-header">
-<div>
-<div class="section-title">Последние операции</div>
-<div class="section-subtitle">Ваши последние расходы и доходы</div>
-</div>
-<button class="text-btn" onclick="showView('transactions')">Все</button>
-</div>
-<div id="dashboardTransactions"></div>
-</div>
+        <div class="form-group">
+          <label for="amount">Сумма (₽)</label>
+          <input type="number" id="amount" placeholder="0" min="0" step="any" required>
+        </div>
 
-<div class="ai-card">
-<div class="ai-card-icon">✦</div>
-<div class="ai-card-content">
-<div class="ai-card-title">Финансовый помощник</div>
-<div class="ai-card-text">Получите совет по бюджету, долгам и накоплениям.</div>
-<button class="full-btn" onclick="showView('ai')">Спросить ИИ</button>
-</div>
-</div>
-</section>
+        <button type="submit" class="btn-submit">Добавить запись</button>
+      </form>
+    </section>
 
-<section id="transactions" class="view">
-<div class="page-head">
-<div>
-<h1>Операции</h1>
-<p>Доходы и расходы</p>
-</div>
-<button class="add-btn" onclick="openTransactionModal()">＋</button>
-</div>
+    <!-- Список обязательных платежей -->
+    <section class="section">
+      <h3><i class="fa-solid fa-calendar-check"></i> Кредиты и Обязательства</h3>
+      <div class="transactions-list" id="creditList">
+        <p class="empty-text">Нет активных кредитов или ипотек</p>
+      </div>
+    </section>
 
-<div class="filters">
-<button class="filter-btn active" onclick="filterTransactions('all',this)">Все</button>
-<button class="filter-btn" onclick="filterTransactions('income',this)">Доходы</button>
-<button class="filter-btn" onclick="filterTransactions('expense',this)">Расходы</button>
-</div>
+    <!-- Список последних транзакций -->
+    <section class="section">
+      <h3><i class="fa-solid fa-list-check"></i> История операций</h3>
+      <div class="transactions-list" id="transactionList">
+        <p class="empty-text">Список транзакций пуст</p>
+      </div>
+    </section>
+  </div>
 
-<div id="transactionsList"></div>
-</section>
-
-<section id="debts" class="view">
-<div class="page-head">
-<div>
-<h1>Долги</h1>
-<p>Кредиты и займы</p>
-</div>
-<button class="add-btn" onclick="openDebtModal()">＋</button>
-</div>
-
-<div class="info-card">
-<div class="info-icon">!</div>
-<div>
-<strong>Контролируйте долги</strong>
-<p>Добавьте кредит, чтобы видеть остаток, платеж и переплату.</p>
-</div>
-</div>
-
-<div id="debtsList"></div>
-</section>
-
-<section id="goals" class="view">
-<div class="page-head">
-<div>
-<h1>Цели</h1>
-<p>Копите на важное</p>
-</div>
-<button class="add-btn" onclick="openGoalModal()">＋</button>
-</div>
-
-<div class="goal-summary">
-<div class="goal-summary-title">Ваши финансовые цели</div>
-<div class="goal-summary-text">Планируйте накопления и следите за прогрессом.</div>
-</div>
-
-<div id="goalsList"></div>
-</section>
-
-<section id="payments" class="view">
-<div class="page-head">
-<div>
-<h1>Платежи</h1>
-<p>Обязательные ежемесячные расходы</p>
-</div>
-<button class="add-btn" onclick="openMandatoryPaymentModal()">＋</button>
-</div>
-
-<div class="payment-total-card">
-<div class="payment-total-label">Обязательные расходы в месяц</div>
-<div class="payment-total-value" id="paymentsTotal">0 ₽</div>
-</div>
-
-<div id="paymentsList"></div>
-</section>
-
-<section id="ai" class="view">
-<div class="page-head">
-<div>
-<h1>Финансовый ИИ</h1>
-<p>Ваш личный помощник</p>
-</div>
-</div>
-
-<div class="ai-intro">
-<div class="ai-intro-icon">✦</div>
-<div>
-<strong>Чем могу помочь?</strong>
-<p>Спросите про долги, накопления, бюджет или расходы.</p>
-</div>
-</div>
-
-<div class="quick-questions">
-<button onclick="document.getElementById('aiInput').value='Как быстрее погасить долги?';sendAI()">Как погасить долги?</button>
-<button onclick="document.getElementById('aiInput').value='Как начать копить деньги?';sendAI()">Как начать копить?</button>
-<button onclick="document.getElementById('aiInput').value='Как уменьшить расходы?';sendAI()">Как уменьшить расходы?</button>
-</div>
-
-<div class="chat-box">
-<div id="chatMessages" class="chat-messages">
-<div class="chat-message assistant">
-<div class="chat-avatar">✦</div>
-<div class="chat-bubble">Здравствуйте! Я ваш финансовый помощник. Расскажите, что хотите улучшить в своих финансах.</div>
-</div>
-</div>
-
-<div class="chat-input-wrap">
-<input id="aiInput" type="text" placeholder="Напишите вопрос..." autocomplete="off">
-<button onclick="sendAI()">➤</button>
-</div>
-</div>
-</section>
-
-</main>
-
-<nav class="bottom-nav">
-<button class="nav-btn active" data-view="dashboard" onclick="showView('dashboard')">
-<div class="nav-icon">⌂</div>
-<span>Главная</span>
-</button>
-<button class="nav-btn" data-view="transactions" onclick="showView('transactions')">
-<div class="nav-icon">↕</div>
-<span>Операции</span>
-</button>
-<button class="nav-btn" data-view="debts" onclick="showView('debts')">
-<div class="nav-icon">₽</div>
-<span>Долги</span>
-</button>
-<button class="nav-btn" data-view="goals" onclick="showView('goals')">
-<div class="nav-icon">◎</div>
-<span>Цели</span>
-</button>
-<button class="nav-btn" data-view="ai" onclick="showView('ai')">
-<div class="nav-icon">✦</div>
-<span>ИИ</span>
-</button>
-</nav>
-</div>
-
-<div id="modal" class="modal">
-<div class="modal-overlay" onclick="closeModal()"></div>
-<div class="modal-content">
-<div class="modal-header">
-<div id="modalTitle">Добавить</div>
-<button class="modal-close" onclick="closeModal()">×</button>
-</div>
-<div id="modalContent"></div>
-</div>
-</div>
-
-<script src="js/app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
