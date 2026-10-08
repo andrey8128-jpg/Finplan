@@ -1,62 +1,67 @@
-// Хранилище данных
+// Загрузка сохраненных данных из LocalStorage при старте
 let items = JSON.parse(localStorage.getItem('financeItems')) || [];
 
-// DOM Элементы
+// Элементы формы и ввода
 const financeForm = document.getElementById('financeForm');
 const typeInput = document.getElementById('type');
 const titleInput = document.getElementById('title');
 const amountInput = document.getElementById('amount');
 
+// Элементы отображения итоговых сумм
 const totalBalanceEl = document.getElementById('totalBalance');
 const totalIncomeEl = document.getElementById('totalIncome');
 const totalExpenseEl = document.getElementById('totalExpense');
 const totalCreditsEl = document.getElementById('totalCredits');
 
+// Контейнеры для списков
 const transactionList = document.getElementById('transactionList');
 const creditList = document.getElementById('creditList');
 
-// Форматирование чисел в валюту
+// Форматирование чисел в рубли
 function formatCurrency(amount) {
   return new Intl.NumberFormat('ru-RU').format(amount) + ' ₽';
 }
 
-// Сохранение в LocalStorage
+// Сохранение массива записей в память устройства (LocalStorage)
 function saveData() {
   localStorage.setItem('financeItems', JSON.stringify(items));
 }
 
-// Отрисовка данных и перерасчет
+// Полное обновление интерфейса и пересчёт сумм
 function updateUI() {
-  // Вычисления
+  // Подсчёт доходов
   const incomeTotal = items
     .filter(item => item.type === 'income')
     .reduce((acc, item) => acc + item.amount, 0);
 
+  // Подсчёт обычных расходов
   const expenseTotal = items
     .filter(item => item.type === 'expense')
     .reduce((acc, item) => acc + item.amount, 0);
 
+  // Подсчёт обязательных платежей (Кредиты и Ипотека)
   const creditTotal = items
     .filter(item => item.type === 'credit')
     .reduce((acc, item) => acc + item.amount, 0);
 
-  // Общий баланс (Доходы минус Расходы и Кредиты)
+  // Общий оставшийся баланс: Доходы - Расходы - Кредиты
   const balanceTotal = incomeTotal - expenseTotal - creditTotal;
 
-  // Обновление общего баланса и показателей
+  // Вывод показателей на экран
   totalBalanceEl.textContent = formatCurrency(balanceTotal);
   totalIncomeEl.textContent = formatCurrency(incomeTotal);
   totalExpenseEl.textContent = formatCurrency(expenseTotal);
   totalCreditsEl.textContent = formatCurrency(creditTotal);
 
-  // Очистка списков
+  // Очищаем списки перед новой отрисовкой
   transactionList.innerHTML = '';
   creditList.innerHTML = '';
 
+  // Разделяем записи по типам
   const creditItems = items.filter(i => i.type === 'credit');
   const otherItems = items.filter(i => i.type !== 'credit');
 
-  // Отрисовка обязательных платежей (Кредитов)
+  // Отрисовка списка кредитов и ипотек
   if (creditItems.length === 0) {
     creditList.innerHTML = '<p class="empty-text">Нет активных кредитов или ипотек</p>';
   } else {
@@ -65,7 +70,7 @@ function updateUI() {
     });
   }
 
-  // Отрисовка обычных транзакций (Доходы/Расходы)
+  // Отрисовка списка остальных операций (доходы/расходы)
   if (otherItems.length === 0) {
     transactionList.innerHTML = '<p class="empty-text">Список транзакций пуст</p>';
   } else {
@@ -75,7 +80,7 @@ function updateUI() {
   }
 }
 
-// Создание HTML-элемента для записи
+// Создание HTML-карточки для конкретной записи
 function createItemElement(item) {
   const div = document.createElement('div');
   div.className = 'item-card';
@@ -108,7 +113,7 @@ function createItemElement(item) {
       <span class="item-amount ${item.type}">
         ${sign}${formatCurrency(item.amount)}
       </span>
-      <button class="btn-delete" onclick="deleteItem(${item.id})">
+      <button class="btn-delete" onclick="deleteItem(${item.id})" title="Удалить">
         <i class="fa-solid fa-trash-can"></i>
       </button>
     </div>
@@ -117,34 +122,46 @@ function createItemElement(item) {
   return div;
 }
 
-// Добавление новой записи
+// Обработчик отправки формы (добавление новой записи)
 financeForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const newItem = {
-    id: Date.now(),
+    id: Date.now(), // Уникальный ID на основе времени
     type: typeInput.value,
     title: titleInput.value.trim(),
     amount: parseFloat(amountInput.value)
   };
 
-  if (!newItem.title || isNaN(newItem.amount)) return;
+  if (!newItem.title || isNaN(newItem.amount) || newItem.amount <= 0) return;
 
+  // Добавляем запись в начало массива
   items.unshift(newItem);
+
+  // Сохраняем в память устройства и обновляем UI
   saveData();
   updateUI();
 
-  // Сброс полей формы
+  // Сброс полей ввода
   titleInput.value = '';
   amountInput.value = '';
 });
 
-// Удаление записи
+// Функция удаления записи по ID
 function deleteItem(id) {
   items = items.filter(item => item.id !== id);
   saveData();
   updateUI();
 }
 
-// Первоначальный запуск
+// Инициализация интерфейса при первой загрузке страницы
 updateUI();
+
+// Регистрация Service Worker для возможности работы приложения без интернета
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Service Worker успешно зарегистрирован:', reg.scope))
+      .catch(err => console.log('Ошибка регистрации Service Worker:', err));
+  });
+}
